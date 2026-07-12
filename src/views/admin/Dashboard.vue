@@ -1,36 +1,39 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-import { clearToken } from '@/lib/api'
-
-const router = useRouter()
-
-function logout() {
-  clearToken()
-  router.push('/auth/login')
-}
+import AdminLayout from '@/layouts/AdminLayout.vue'
 </script>
 
 <template>
-  <div class="min-h-screen bg-muted/10">
-    <header class="h-16 bg-card border-b border-border flex items-center justify-between px-6">
-      <div class="font-bold text-lg">nayz-auth <span class="font-normal text-muted-foreground ml-2">Console</span></div>
-      <button 
-        @click="logout"
-        class="text-sm font-medium text-destructive hover:bg-destructive/10 px-3 py-1.5 rounded-md transition-colors"
-      >
-        Sair
-      </button>
-    </header>
+  <AdminLayout>
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
+      <p class="text-muted-foreground mt-1">Bem-vindo à central administrativa do nayz-auth. Selecione um módulo na barra lateral.</p>
+    </div>
 
-    <main class="max-w-6xl mx-auto p-8">
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold tracking-tight">Aplicações (Em Breve)</h1>
-        <p class="text-muted-foreground mt-1">Gerencie os acessos de todas as aplicações da sua arquitetura.</p>
+    <!-- Skeleton Base Animado (Estudo de UX para quando a API estiver conectada) -->
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <!-- Card Skeleton 1 -->
+      <div class="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col justify-between">
+        <div>
+          <div class="h-10 w-10 bg-primary/10 rounded-lg mb-4 flex items-center justify-center">
+            <div class="h-5 w-5 bg-primary/30 rounded animate-pulse"></div>
+          </div>
+          <div class="h-5 bg-muted rounded w-1/3 mb-2 animate-pulse"></div>
+          <div class="h-4 bg-muted rounded w-2/3 animate-pulse"></div>
+        </div>
+        <div class="h-8 bg-muted rounded w-1/4 mt-6 animate-pulse"></div>
       </div>
 
-      <div class="bg-card border border-border rounded-lg h-64 flex items-center justify-center text-muted-foreground">
-        A listagem de aplicações consumindo a API será montada aqui na próxima iteração!
+      <!-- Card Skeleton 2 -->
+      <div class="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col justify-between">
+        <div>
+          <div class="h-10 w-10 bg-secondary/30 rounded-lg mb-4 flex items-center justify-center">
+            <div class="h-5 w-5 bg-secondary/50 rounded animate-pulse"></div>
+          </div>
+          <div class="h-5 bg-muted rounded w-1/2 mb-2 animate-pulse"></div>
+          <div class="h-4 bg-muted rounded w-3/4 animate-pulse"></div>
+        </div>
+        <div class="h-8 bg-muted rounded w-1/4 mt-6 animate-pulse"></div>
       </div>
-    </main>
-  </div>
+    </div>
+  </AdminLayout>
 </template>
