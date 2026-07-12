@@ -18,6 +18,12 @@ const router = createRouter({
       name: 'AdminDashboard',
       component: () => import('@/views/admin/Dashboard.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/admin/applications',
+      name: 'AdminApplications',
+      component: () => import('@/views/admin/Applications.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })

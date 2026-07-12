@@ -86,15 +86,32 @@ export const auth = {
 };
 
 export const admin = {
-  // TODO: Serão implementados nas próximas etapas
   async getApplications() {
     try {
       const { data } = await api.get('/admin/applications');
+      return data; // Array de objetos da Aplicação
+    } catch (error) {
+      handleError(error);
+    }
+  },
+
+  async createApplication(payload: { name: string, auth_methods: string[] }) {
+    try {
+      const { data } = await api.post('/admin/applications', payload);
       return data;
     } catch (error) {
       handleError(error);
     }
   },
+
+  async deleteApplication(id: string) {
+    try {
+      const { data } = await api.delete(`/admin/applications/${id}`);
+      return data;
+    } catch (error) {
+      handleError(error);
+    }
+  }
 };
 
 export default api;
