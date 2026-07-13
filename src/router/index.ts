@@ -24,6 +24,12 @@ const router = createRouter({
       name: 'AdminApplications',
       component: () => import('@/views/admin/Applications.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/admin/applications/:id',
+      name: 'ApplicationDetails',
+      component: () => import('@/views/admin/ApplicationDetails.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })

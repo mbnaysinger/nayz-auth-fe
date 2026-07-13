@@ -14,21 +14,20 @@ const toggleDark = useToggle(isDark)
 
 const activeTab = ref<'password' | 'passwordless'>('password')
 
-// --- Form: Senha ---
-const emailPassword = ref('')
+const identifier = ref('')
 const password = ref('')
 const loadingPassword = ref(false)
 
 async function onPasswordSubmit() {
-  if (!emailPassword.value || !password.value) {
+  if (!identifier.value || !password.value) {
     toast.error('Preencha e-mail e senha')
     return
   }
   loadingPassword.value = true
   try {
-    const res = await auth.login(emailPassword.value, password.value)
+    const res = await auth.login(identifier.value, password.value)
     if (res?.token) {
-      setToken(res.token)
+      setToken(res.token, res.refresh_token) // Salvando também o refresh_token
       toast.success('Acesso autorizado!')
       router.push('/admin')
     }
@@ -47,13 +46,13 @@ const loadingPwdless = ref(false)
 
 async function onPwdlessRequest() {
   if (!emailPwdless.value) {
-    toast.error('Informe seu e-mail')
+    toast.error('Informe seu identificador')
     return
   }
   loadingPwdless.value = true
   try {
     await auth.passwordlessStart(emailPwdless.value)
-    toast.success('Se o e-mail existir, enviamos um código.')
+    toast.success('Se cadastrado, enviamos um código.')
     stepPwdless.value = 'verify'
   } catch (err) {
     toast.error(err instanceof ApiError ? err.message : 'Falha ao solicitar código')
@@ -71,7 +70,7 @@ async function onPwdlessVerify() {
   try {
     const res = await auth.passwordlessVerify(emailPwdless.value, code.value)
     if (res?.token) {
-      setToken(res.token)
+      setToken(res.token, res.refresh_token) // Salvando também o refresh_token
       toast.success('Acesso sem senha autorizado!')
       router.push('/admin')
     }
@@ -95,13 +94,13 @@ async function onPwdlessVerify() {
       </button>
     </header>
 
-    <div class="flex-1 flex items-center justify-center p-4">
+    <div class="flex-1 flex items-center justify-center p-1">
       <div class="w-full max-w-[400px]">
         <!-- Logo e Cabeçalho (Invertido dinamicamente no Dark Mode) -->
         <div class="mb-8 flex flex-col items-center">
           <img src="/nayztech.png" alt="NayzTech Logo" class="h-42 object-contain transition-all duration-300" />
           <h1 class="text-2xl font-semibold tracking-tight text-foreground"></h1>
-          <p class="text-lg text-muted-foreground mt-3">
+          <p class="text-lg text-muted-foreground mt-7">
             Identity Provider
           </p>
         </div>
@@ -114,20 +113,20 @@ async function onPwdlessVerify() {
               class="flex-1 text-sm font-medium py-1.5 rounded-md transition-all"
               :class="activeTab === 'password' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
             >
-              Senha Fixa
+              Usuário e senha
             </button>
             <button 
               @click="activeTab = 'passwordless'"
               class="flex-1 text-sm font-medium py-1.5 rounded-md transition-all"
               :class="activeTab === 'passwordless' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
             >
-              Sem Senha (OTP)
+              Acesso por código
             </button>
           </div>
 
           <!-- TAB: Senha -->
           <form v-if="activeTab === 'password'" @submit.prevent="onPasswordSubmit" class="space-y-4 animate-in fade-in slide-in-from-left-2 duration-300">
-            <BaseInput v-model="emailPassword" label="E-mail" type="email" placeholder="nome@nayz.tech" required />
+            <BaseInput v-model="identifier" label="Identificador" type="text" placeholder="E-mail ou usuário" required />
             <BaseInput v-model="password" label="Senha" type="password" placeholder="••••••••" required />
             
             <BaseButton type="submit" variant="primary" class="w-full mt-2" :is-loading="loadingPassword">
@@ -141,7 +140,7 @@ async function onPwdlessVerify() {
             
             <!-- Etapa 1: Solicitar Email -->
             <form v-if="stepPwdless === 'request'" @submit.prevent="onPwdlessRequest" class="space-y-4">
-              <BaseInput v-model="emailPwdless" label="E-mail Corporativo" type="email" placeholder="seu@email.com" required />
+              <BaseInput v-model="emailPwdless" label="Identificador" type="text" placeholder="E-mail ou usuário" required />
               
               <BaseButton type="submit" variant="primary" class="w-full" :is-loading="loadingPwdless">
                 <Mail v-if="!loadingPwdless" class="w-4 h-4 mr-2" />

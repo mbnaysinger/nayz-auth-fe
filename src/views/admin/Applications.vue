@@ -159,15 +159,27 @@ onMounted(() => {
                 </div>
               </td>
               
-              <!-- Coluna 4: Ações Destrutivas -->
+              <!-- Coluna 4: Ações -->
               <td class="px-6 py-4 text-right">
-                <button 
-                  @click="onDelete(app.id, app.name)"
-                  class="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 outline-none"
-                  title="Excluir Aplicação"
-                >
-                  <Trash2 class="w-5 h-5" />
-                </button>
+                <div class="flex items-center justify-end space-x-2">
+                  <!-- Botão primário para Detalhes (Sempre visível) -->
+                  <button 
+                    @click="$router.push(`/admin/applications/${app.id}`)"
+                    class="p-2 text-primary hover:bg-primary/10 rounded-md transition-all outline-none border border-transparent hover:border-primary/20"
+                    title="Gerenciar Papéis e Usuários"
+                  >
+                    <ShieldCheck class="w-5 h-5" />
+                  </button>
+
+                  <!-- Botão de exclusão (Apenas visível no Hover) -->
+                  <button 
+                    @click="onDelete(app.id, app.name)"
+                    class="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 outline-none"
+                    title="Excluir Aplicação"
+                  >
+                    <Trash2 class="w-5 h-5" />
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
