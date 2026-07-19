@@ -3,12 +3,31 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 import { LogIn, Mail, Sun, Moon } from 'lucide-vue-next'
-import { auth, setToken, ApiError } from '@/lib/api'
+import { auth, ApiError } from '@/lib/api'
+import { useAuthStore } from '@/stores/auth'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import BaseInput from '@/components/ui/BaseInput.vue'
 import { useDark, useToggle } from '@vueuse/core'
 
 const router = useRouter()
+const authStore = useAuthStore()
+
+// Erro amigável exibido dentro do card (ex.: usuário sem SUPER_ADMIN)
+const accessError = ref('')
+
+// O console NAYZ-ID é exclusivo de SUPER_ADMIN: valida os claims do JWT após autenticar
+function enterConsole(): boolean {
+  if (!authStore.isSuperAdmin) {
+    authStore.logout()
+    accessError.value = 'Seu usuário não possui a role SUPER_ADMIN. Solicite acesso a um administrador.'
+    toast.error('Acesso restrito', {
+      description: 'Apenas usuários SUPER_ADMIN podem acessar o console NAYZ-ID.'
+    })
+    return false
+  }
+  accessError.value = ''
+  return true
+}
 const isDark = useDark({ selector: 'html', attribute: 'class', valueDark: 'dark', valueLight: 'light' })
 const toggleDark = useToggle(isDark)
 
@@ -27,7 +46,8 @@ async function onPasswordSubmit() {
   try {
     const res = await auth.login(identifier.value, password.value)
     if (res?.token) {
-      setToken(res.token, res.refresh_token) // Salvando também o refresh_token
+      authStore.setSession(res.token, res.refresh_token) // Salvando também o refresh_token
+      if (!enterConsole()) return
       toast.success('Acesso autorizado!')
       router.push('/admin')
     }
@@ -70,7 +90,8 @@ async function onPwdlessVerify() {
   try {
     const res = await auth.passwordlessVerify(emailPwdless.value, code.value)
     if (res?.token) {
-      setToken(res.token, res.refresh_token) // Salvando também o refresh_token
+      authStore.setSession(res.token, res.refresh_token) // Salvando também o refresh_token
+      if (!enterConsole()) return
       toast.success('Acesso sem senha autorizado!')
       router.push('/admin')
     }
@@ -106,6 +127,11 @@ async function onPwdlessVerify() {
         </div>
 
         <div class="bg-card rounded-2xl shadow-xl border border-border p-6 sm:p-8">
+          <!-- Erro amigável de acesso (ex.: sem SUPER_ADMIN) -->
+          <div v-if="accessError" class="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive font-medium animate-in fade-in">
+            {{ accessError }}
+          </div>
+
           <!-- Navegação das Tabs (Estilo Pílula/Segmented Control) -->
           <div class="flex p-1 bg-muted rounded-lg mb-6">
             <button 

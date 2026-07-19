@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { LogOut, LayoutDashboard, Component, Menu, Sun, Moon } from 'lucide-vue-next'
+import { LogOut, LayoutDashboard, Component, Menu, Sun, Moon, Users, Contact, CircleUserRound } from 'lucide-vue-next'
 import { useDark, useToggle } from '@vueuse/core'
-import { clearToken } from '@/lib/api'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
 const isDark = useDark({
   selector: 'html',
   attribute: 'class',
@@ -19,10 +20,12 @@ const isSidebarOpen = ref(false)
 const navigation = [
   { name: 'Visão Geral', route: '/admin', icon: LayoutDashboard },
   { name: 'Aplicações', route: '/admin/applications', icon: Component },
+  { name: 'Usuários', route: '/admin/users', icon: Users },
+  { name: 'Pessoas', route: '/admin/persons', icon: Contact },
 ]
 
 function logout() {
-  clearToken()
+  authStore.logout()
   router.push('/auth/login')
 }
 </script>
@@ -80,6 +83,12 @@ function logout() {
         </div>
 
         <div class="flex items-center space-x-2">
+          <!-- Usuário logado (claim name ou sub do JWT) -->
+          <div class="flex items-center gap-2 text-sm text-muted-foreground max-w-[180px] sm:max-w-none">
+            <CircleUserRound class="h-5 w-5 shrink-0" />
+            <span class="truncate">{{ authStore.displayName }}</span>
+          </div>
+
           <!-- Toggle do Dark Mode com Ícones de Sol e Lua fluidos -->
           <button @click="toggleDark()" class="p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50">
             <Sun v-if="!isDark" class="h-5 w-5" />
