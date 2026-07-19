@@ -9,7 +9,6 @@ RUN npm ci
 COPY . .
 
 # IMPORTANTE: variáveis VITE_* são de BUILD (ficam embutidas no bundle).
-# Construa a imagem por ambiente passando os build args (ver deploy/docker-compose.yml).
 ARG VITE_API_BASE_URL
 ARG VITE_NAYZ_AUTH_APP_ID
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL \
